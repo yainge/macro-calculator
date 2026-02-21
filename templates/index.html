@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macro Calculator</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────── -->
+<header>
+  <h1>Macro Calculator</h1>
+  <button id="goals-btn" class="icon-btn" title="Set daily goals">&#9881; Goals</button>
+</header>
+
+<!-- ── Goals overlay ────────────────────────────────────── -->
+<div id="goals-overlay" class="overlay hidden">
+  <div class="overlay-card">
+    <h2>Daily Macro Goals</h2>
+    <div class="form-row">
+      <label for="goal-protein">Protein (g)</label>
+      <input type="number" id="goal-protein" min="0" step="1" placeholder="0">
+    </div>
+    <div class="form-row">
+      <label for="goal-fat">Fat (g)</label>
+      <input type="number" id="goal-fat" min="0" step="1" placeholder="0">
+    </div>
+    <div class="form-row">
+      <label for="goal-carbs">Carbs (g)</label>
+      <input type="number" id="goal-carbs" min="0" step="1" placeholder="0">
+    </div>
+    <div class="overlay-actions">
+      <button id="goals-cancel-btn" class="btn btn-secondary">Cancel</button>
+      <button id="goals-save-btn" class="btn btn-primary">Save Goals</button>
+    </div>
+    <p id="goals-error" class="error-msg hidden"></p>
+  </div>
+</div>
+
+<!-- ── Progress ─────────────────────────────────────────── -->
+<section id="progress-section">
+  <div id="no-goals-msg" class="hint hidden">Set your daily goals using the Goals button above.</div>
+  <div id="progress-bars" class="hidden">
+    <div class="macro-row">
+      <span class="macro-label">Protein</span>
+      <div class="bar-wrap">
+        <div class="bar protein-bar" id="bar-protein"></div>
+      </div>
+      <span class="macro-stat" id="stat-protein">0 / 0g</span>
+      <span class="macro-remain" id="remain-protein"></span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-label">Fat</span>
+      <div class="bar-wrap">
+        <div class="bar fat-bar" id="bar-fat"></div>
+      </div>
+      <span class="macro-stat" id="stat-fat">0 / 0g</span>
+      <span class="macro-remain" id="remain-fat"></span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-label">Carbs</span>
+      <div class="bar-wrap">
+        <div class="bar carbs-bar" id="bar-carbs"></div>
+      </div>
+      <span class="macro-stat" id="stat-carbs">0 / 0g</span>
+      <span class="macro-remain" id="remain-carbs"></span>
+    </div>
+    <p class="calories-total" id="calories-total"></p>
+  </div>
+</section>
+
+<!-- ── Add food ──────────────────────────────────────────── -->
+<section id="add-section">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="common">Common Foods</button>
+    <button class="tab-btn" data-tab="custom">Custom Entry</button>
+  </div>
+
+  <!-- Common foods tab -->
+  <div id="tab-common" class="tab-content">
+    <div class="search-row">
+      <input type="text" id="food-search" placeholder="Search foods..." autocomplete="off">
+    </div>
+
+    <div id="food-list-wrap">
+      <ul id="food-list"></ul>
+      <p id="food-list-empty" class="hint hidden">No foods found. Try a different search term.</p>
+      <p id="food-list-loading" class="hint">Loading foods…</p>
+    </div>
+
+    <div id="food-selected-panel" class="hidden">
+      <div class="selected-name" id="selected-name"></div>
+      <div class="selected-meta" id="selected-meta"></div>
+      <div class="quantity-row">
+        <label for="food-qty">Quantity</label>
+        <input type="number" id="food-qty" min="0.1" step="0.1" value="100">
+        <span id="food-qty-unit">g</span>
+      </div>
+      <div class="preview-row" id="food-preview"></div>
+      <button id="add-common-btn" class="btn btn-primary">Add to Log</button>
+      <p id="common-error" class="error-msg hidden"></p>
+    </div>
+  </div>
+
+  <!-- Custom entry tab -->
+  <div id="tab-custom" class="tab-content hidden">
+    <div class="form-row">
+      <label for="custom-name">Food name</label>
+      <input type="text" id="custom-name" placeholder="e.g. Protein shake">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="custom-protein">Protein (g)</label>
+        <input type="number" id="custom-protein" min="0" step="0.1" placeholder="0">
+      </div>
+      <div class="form-row">
+        <label for="custom-fat">Fat (g)</label>
+        <input type="number" id="custom-fat" min="0" step="0.1" placeholder="0">
+      </div>
+      <div class="form-row">
+        <label for="custom-carbs">Carbs (g)</label>
+        <input type="number" id="custom-carbs" min="0" step="0.1" placeholder="0">
+      </div>
+      <div class="form-row">
+        <label for="custom-calories">Calories <span class="optional">(optional)</span></label>
+        <input type="number" id="custom-calories" min="0" step="1" placeholder="—">
+      </div>
+    </div>
+    <button id="add-custom-btn" class="btn btn-primary">Add to Log</button>
+    <p id="custom-error" class="error-msg hidden"></p>
+  </div>
+</section>
+
+<!-- ── Today's log ───────────────────────────────────────── -->
+<section id="log-section">
+  <h2 id="log-date-heading">Today's Log</h2>
+  <div id="log-empty" class="hint hidden">Nothing logged yet today.</div>
+  <ul id="log-list"></ul>
+  <div id="log-totals" class="hidden">
+    <div class="totals-row">
+      <span>Totals:</span>
+      <span class="total-chip protein-chip" id="total-protein">P: 0g</span>
+      <span class="total-chip fat-chip" id="total-fat">F: 0g</span>
+      <span class="total-chip carbs-chip" id="total-carbs">C: 0g</span>
+      <span class="total-chip cal-chip" id="total-calories">— kcal</span>
+    </div>
+  </div>
+</section>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
